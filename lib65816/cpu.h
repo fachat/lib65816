@@ -231,8 +231,11 @@ void CPU_debug(void);
 
 int CPU_log(char *line, int maxlen);
 
-/* 65816 disassembler output; returns number of chars printed */
-int CPU_dis(char *line, int maxlen, int addr, char (*peek)(addr));
+/* 65816 disassembler output; 
+ * stat is a pointer to a status-register like location to use X and M bits
+ * (and modifying while reading SEP and REP opcodes)
+ * returns the number of bytes disassembled */
+int CPU_dis(char *line, int maxlen, int addr, unsigned char *stat, unsigned char (*peek)(addr));
 
 /* Set the output file of the debugger trace output. */
 /* Default is stdout */
