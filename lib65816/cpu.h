@@ -227,12 +227,12 @@ void CPU_modeSwitch(void);
 
 void CPU_debug(void);
 
-/* log the CPU state to a string buffer (for monitor / trace) */
+/* log the CPU state to a string buffer (for monitor / trace); returns number of chars printed */
 
-void CPU_log(char *line, int maxlen);
+int CPU_log(char *line, int maxlen);
 
-/* 65816 disassembler output */
-void CPU_dis(char *line, int maxlen, int addr, char (*peek)(addr));
+/* 65816 disassembler output; returns number of chars printed */
+int CPU_dis(char *line, int maxlen, int addr, char (*peek)(addr));
 
 /* Set the output file of the debugger trace output. */
 /* Default is stdout */
