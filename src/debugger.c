@@ -129,7 +129,7 @@ void CPU_setDbgOutfile(FILE *f) {
 	out = f;
 }
 
-void CPU_debug(void) {
+void CPU_debug() {
 	int	opcode;
 	int	mode;
 	int	operand;
@@ -331,5 +331,198 @@ void CPU_debug(void) {
         fprintf( out, "%s\n", operands );
 	fflush(out);
 }
+
+
+int CPU_log(char *buf, int maxlen) {
+
+	int l = maxlen;
+	int p = 0;
+	int n;
+
+	n = snprintf(buf+p, l, "A=%04X X=%04X Y=%04X S=%04X D=%04X B=%02X P=%02X (%c%c%c%c%c%c%c%c) E=%1d  ",
+			(int) A.W, (int) X.W, (int) Y.W, (int) S.W, (int) D.W, (int) DB,
+			(int) P,
+			(F_getN?'N':'n'), (F_getV?'V':'v'), (F_getM?'M':'m'), (F_getX?'X':'x'),
+			(F_getD?'D':'d'), (F_getI?'I':'i'), (F_getZ?'Z':'z'), (F_getC?'C':'c'),
+			(int) E);
+	l -= n;
+	p += n;
+
+	n = snprintf(buf+p, l, "%02X/%04X",(int) PC.B.PB,(int) PC.W.PC);
+	l -= n;
+	p += n;
+
+	return p;
+}
+
+
+int CPU_dis(char *buf, int maxlen, int addr, char (*peek)(int addr)) {
+	int l = maxlen;
+	int p = 0;
+	int n;
+
+	int	opcode;
+	int	mode;
+	int	operand;
+
+	int pc = addr;
+	int pcb = (pc >> 16) & 0xff; 
+	int pcw = pc & 0xffff; 
+
+	opcode = peek(pc);
+	mode = addrmodes[opcode];
+	n = snprintf(buf, p, "%02X/%04X  %s ", pcb, pcw, mnemonics[opcode]);
+	p += n;
+	l -= n;
+
+	n = 0;
+	switch (mode) {
+        case IMM8:
+            n = snprintf(buf+p, l, "#$%02X", peek(pc+1) );
+            break;
+
+        case IMM:
+            operand = peek(pc+1) | (peek(pc+2)<<8);
+            if( F_getM ) n = snprintf(buf+p, l, "#$%02X", (operand & 0xFF));
+            else         n = snprintf(buf+p, l, "#$%04X", operand );
+            break;
+
+        case IMMX:
+            operand = peek(pc+1) | (peek(pc+2)<<8);
+            if( F_getX ) n = snprintf(buf+p, l, "#$%02X", (operand & 0xFF));
+            else         n = snprintf(buf+p, l, "#$%04X", operand );
+            break;
+
+        case ACC:
+            n = snprintf(buf+p, l, "A" );
+            break;
+
+        case PCR:
+            operand = peek(pc+1);
+            n = snprintf(buf, l, "$%02X ($%02X%04X)", operand, pcb, pcw + operand + 2 - ((operand > 127) ? 256 : 0));
+            break;
+
+        case PCRL:
+            operand = peek(pc+1) | (peek(pc+2)<<8);
+            n = snprintf(buf, l, "$%02X ($%02X%04X)", operand, pcb, pcw + operand + 3 - ((operand > 32767) ? 65536 : 0));
+            break;
+
+        case IMPL:
+            //sprintf( operands, "" );
+            break;
+
+        case DP:
+            operand = peek(pc+1);
+            n = snprintf(buf+p, l, "$%02X",
+                operand);
+            break;
+
+        case DPX:
+            operand = peek(pc+1);
+            n = snprintf(buf+p, l, "$%02X,X",
+                operand);
+            break;
+
+        case DPY:
+            operand = peek(pc+1);
+            n = snprintf(buf+p, l, "$%02X,Y",
+                operand);
+            break;
+
+        case DPI:
+            operand = peek(pc+1);
+            n = snprintf(buf+p, l, "($%02X)",
+                operand);
+            break;
+
+        case DPIX:
+            operand = peek(pc+1);
+            n = snprintf(buf+p, l, "($%02X,X)",
+                operand);
+            break;
+
+        case DPIY:
+            operand = peek(pc+1);
+            n = snprintf(buf+p, l, "($%02X),Y",
+                operand);
+            break;
+
+        case DPIL:
+            operand = peek(pc+1);
+            n = snprintf(buf+p, l, "[$%02X]",
+                operand);
+            break;
+
+        case DPILY:
+            operand = peek(pc+1);
+            n = snprintf(buf+p, l, "[$%02X],Y",
+                operand);
+            break;
+
+        case ABS:
+            operand = peek(pc+1) | (peek(pc+2)<<8);
+            n = snprintf(buf+p, l, "$%04X",
+                operand);
+            break;
+
+        case ABSX:
+            operand = peek(pc+1) | (peek(pc+2)<<8);
+            n = snprintf(buf+p, l, "$%04X,X",
+                operand);
+            break;
+
+        case ABSY:
+            operand = peek(pc+1) | (peek(pc+2)<<8);
+            n = snprintf(buf+p, l, "$%04X,Y",
+                operand);
+            break;
+
+        case ABSL:
+            operand = peek(pc+1) | (peek(pc+2)<<8) | (peek(pc+3)<<16);
+            n = snprintf(buf+p, l, "$%06X",
+                operand);
+            break;
+
+        case ABSLX:
+            operand = peek(pc+1) | (peek(pc+2)<<8) | (peek(pc+3)<<16);
+            n = snprintf(buf+p, l, "$%06X",
+                operand);
+            break;
+
+        case ABSI:
+            operand = peek(pc+1) | (peek(pc+2)<<8);
+            n = snprintf(buf+p, l, "$%04X",
+                operand);
+            break;
+
+        case ABSIX:
+            operand = peek(pc+1) | (peek(pc+2)<<8);
+            n = snprintf(buf+p, l, "($%04X,X)",
+                operand);
+            break;
+
+        case STK:
+            operand = peek(pc+1);
+            n = snprintf(buf+p, l, "$%02X,S",
+                operand);
+            break;
+
+        case STKIY:
+            operand = peek(pc+1);
+
+            n = snprintf(buf+p, l, "$%02X,S",
+                operand);
+            break;
+
+        case BLK:
+            n = snprintf(buf+p, l, "$%02X, $%02X", peek(pc+2), peek(pc+1) );
+            break;
+	}
+	p += n;
+	l -= n;
+
+	return p;
+}
+
 
 #endif
