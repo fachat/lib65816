@@ -196,13 +196,13 @@ int CPU_disasm(int out) {
 
         case PCR:
             operand = M_READ(PC.A+1);
-            sprintf( operands, "$%02x ($%02x%04x)", operand, PC.B.PB, PC.W.PC + operand + 2);
+            sprintf( operands, "$%04x 		($%02x -> $%02x%04x)", PC.W.PC + operand + 2, operand, PC.B.PB, PC.W.PC + operand + 2);
 	    size = 2;
             break;
 
         case PCRL:
             operand = M_READ(PC.A+1) | (M_READ(PC.A+2)<<8);
-            sprintf( operands, "$%02x ($%02x%04x)", operand, PC.B.PB, PC.W.PC + operand + 3);
+            sprintf( operands, "$%04x 		($%04x -> $%02x%04x)", PC.W.PC + operand + 3, operand, PC.B.PB, PC.W.PC + operand + 3);
 	    size = 3;
             break;
 
@@ -214,7 +214,7 @@ int CPU_disasm(int out) {
         case DP:
             operand = M_READ(PC.A+1);
             ea = D.W + operand;
-            sprintf( operands, "$%02x (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "$%02x 		(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 2;
             break;
@@ -223,7 +223,7 @@ int CPU_disasm(int out) {
             operand = M_READ(PC.A+1);
             if( F_getX ) ea = D.W + operand + X.B.L;
             else         ea = D.W + operand + X.W;
-            sprintf( operands, "$%02x,X (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "$%02x,X 		(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 2;
             break;
@@ -232,7 +232,7 @@ int CPU_disasm(int out) {
             operand = M_READ(PC.A+1);
             if( F_getX ) ea = D.W + operand + Y.B.L;
             else         ea = D.W + operand + Y.W;
-            sprintf( operands, "$%02x,Y (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "$%02x,Y 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 2;
             break;
@@ -241,7 +241,7 @@ int CPU_disasm(int out) {
             operand = M_READ(PC.A+1);
             ea = D.W + operand;
             ea = M_READ(ea) | (M_READ(ea+1)<<8) | (DB<<16);
-            sprintf( operands, "($%02x) (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "($%02x) 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 2;
             break;
@@ -251,7 +251,7 @@ int CPU_disasm(int out) {
             if( F_getX ) ea = D.W + operand + X.B.L;
             else         ea = D.W + operand + X.W;
             ea = M_READ(ea) | (M_READ(ea+1)<<8) | (DB<<16);
-            sprintf( operands, "($%02x,X) (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "($%02x,X) 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 2;
             break;
@@ -261,7 +261,7 @@ int CPU_disasm(int out) {
             ea = D.W + operand;
             if( F_getX ) ea = M_READ(ea) | (M_READ(ea+1)<<8) | (DB<<16) + Y.B.L;
             else         ea = M_READ(ea) | (M_READ(ea+1)<<8) | (DB<<16) + Y.W;
-            sprintf( operands, "($%02x),Y (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "($%02x),Y 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 2;
             break;
@@ -270,7 +270,7 @@ int CPU_disasm(int out) {
             operand = M_READ(PC.A+1);
             ea = D.W + operand;
             ea = M_READ(ea) | (M_READ(ea+1)<<8) | (M_READ(ea+2)<<16);
-            sprintf( operands, "[$%02x] (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "[$%02x] 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 2;
             break;
@@ -280,7 +280,7 @@ int CPU_disasm(int out) {
             ea = D.W + operand;
             if( F_getX ) ea = M_READ(ea) | (M_READ(ea+1)<<8) | (M_READ(ea+2)<<16) + Y.B.L;
             else         ea = M_READ(ea) | (M_READ(ea+1)<<8) | (M_READ(ea+2)<<16) + Y.W;
-            sprintf( operands, "[$%02x],Y (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "[$%02x],Y 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 2;
             break;
@@ -288,7 +288,7 @@ int CPU_disasm(int out) {
         case ABS:
             operand = M_READ(PC.A+1) | (M_READ(PC.A+2)<<8);
             ea = operand + (DB<<16);
-            sprintf( operands, "$%04x (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "$%04x 		(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 3;
             break;
@@ -297,7 +297,7 @@ int CPU_disasm(int out) {
             operand = M_READ(PC.A+1) | (M_READ(PC.A+2)<<8);
             if( F_getX ) ea = operand + (DB<<16) + X.B.L;
             else         ea = operand + (DB<<16) + X.W;
-            sprintf( operands, "$%04x,X (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "$%04x,X 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 3;
             break;
@@ -306,7 +306,7 @@ int CPU_disasm(int out) {
             operand = M_READ(PC.A+1) | (M_READ(PC.A+2)<<8);
             if( F_getX ) ea = operand + (DB<<16) + Y.B.L;
             else         ea = operand + (DB<<16) + Y.W;
-            sprintf( operands, "$%04x,Y (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "$%04x,Y 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 3;
             break;
@@ -314,7 +314,7 @@ int CPU_disasm(int out) {
         case ABSL:
             operand = M_READ(PC.A+1) | (M_READ(PC.A+2)<<8) | (M_READ(PC.A+3)<<16);
             ea = operand;
-            sprintf( operands, "$%06X (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "$%06x	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 4;
             break;
@@ -323,7 +323,7 @@ int CPU_disasm(int out) {
             operand = M_READ(PC.A+1) | (M_READ(PC.A+2)<<8) | (M_READ(PC.A+3)<<16);
             if( F_getX ) ea = operand + X.B.L;
             else         ea = operand + X.W;
-            sprintf( operands, "$%06X (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "$%06x 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 4;
             break;
@@ -331,7 +331,7 @@ int CPU_disasm(int out) {
         case ABSI:
             operand = M_READ(PC.A+1) | (M_READ(PC.A+2)<<8);
             ea = M_READ(operand) + (M_READ(operand+1)<<8) + (DB<<16);
-            sprintf( operands, "$%04x (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "($%04x)		(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 3;
             break;
@@ -340,7 +340,7 @@ int CPU_disasm(int out) {
             operand = M_READ(PC.A+1) | (M_READ(PC.A+2)<<8);
             ea = operand | (PC.B.PB << 16);
             ea = M_READ(ea) + (M_READ(ea+1)<<8) + (PC.B.PB<<16);
-            sprintf( operands, "($%04x,X) (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "($%04x,X) 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 3;
             break;
@@ -348,7 +348,7 @@ int CPU_disasm(int out) {
         case STK:
             operand = M_READ(PC.A+1);
             ea = operand + S.W;
-            sprintf( operands, "$%02x,S (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "$%02x,S 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 2;
             break;
@@ -359,7 +359,7 @@ int CPU_disasm(int out) {
             if( F_getX ) ea = M_READ(ea) + (M_READ(ea+1)<<8) + (DB<<16) + Y.B.L;
             else         ea = M_READ(ea) + (M_READ(ea+1)<<8) + (DB<<16) + Y.W;
 
-            sprintf( operands, "($%02x,S),Y (@%06X %02x %02x %02x ...)",
+            sprintf( operands, "($%02x,S),Y 	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 2;
             break;
@@ -467,7 +467,7 @@ void CPU_debug(void)
       daddr &= ~15;
       for(i = 0; i < tmp; i++){
 	if((i & 15) == 0)
-	  printf("\n%06lX:", (unsigned long)daddr);
+	  printf("\n%06lx:", (unsigned long)daddr);
 	printf("%c%02x", daddr == m ? '>' : ' ', daddr >= 2 ? (int)MEM_readMem(daddr, 0, 0) : 0);
 	daddr++;
       }
@@ -488,7 +488,7 @@ void CPU_debug(void)
 	printf("\nBreakpoints:\n");
 	for(i = 0; i<BP_NUM; i++){
 	  if(bps[i].flags == BP_EXECUTE)
-	    printf("%03d: 0x%06lX Execute\n", i, (unsigned long)bps[i].addr);
+	    printf("%03d: 0x%06lx Execute\n", i, (unsigned long)bps[i].addr);
 	}
 	printf("\n");
       }
@@ -683,14 +683,14 @@ int CPU_dis(char *buf, int maxlen, int addr, unsigned char *stat, unsigned char 
 
         case ABSL:
             operand = peek(pc+1) | (peek(pc+2)<<8) | (peek(pc+3)<<16);
-            n = snprintf(operands, 40, "$%06X",
+            n = snprintf(operands, 40, "$%06x",
                 operand);
 	    oplen = 4;
             break;
 
         case ABSLX:
             operand = peek(pc+1) | (peek(pc+2)<<8) | (peek(pc+3)<<16);
-            n = snprintf(operands, 40, "$%06X",
+            n = snprintf(operands, 40, "$%06x",
                 operand);
 	    oplen = 4;
             break;
