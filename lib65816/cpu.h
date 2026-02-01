@@ -235,7 +235,7 @@ int CPU_log(char *line, int maxlen);
  * stat is a pointer to a status-register like location to use X and M bits
  * (and modifying while reading SEP and REP opcodes)
  * returns the number of bytes disassembled */
-int CPU_dis(char *line, int maxlen, int addr, unsigned char *stat, unsigned char (*peek)(addr));
+int CPU_dis(char *line, int maxlen, int addr, unsigned char *stat, unsigned char (*peek)(int addr));
 
 /* Set the output file of the debugger trace output. */
 /* Default is stdout */
