@@ -331,7 +331,7 @@ int CPU_disasm(int out) {
         case ABSI:
             operand = M_READ(PC.A+1) | (M_READ(PC.A+2)<<8);
             ea = M_READ(operand) + (M_READ(operand+1)<<8) + (DB<<16);
-            sprintf( operands, "($%04x)		(@%06x %02x %02x %02x ...)",
+            sprintf( operands, "($%04x)	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 3;
             break;
@@ -340,7 +340,7 @@ int CPU_disasm(int out) {
             operand = M_READ(PC.A+1) | (M_READ(PC.A+2)<<8);
             ea = operand | (PC.B.PB << 16);
             ea = M_READ(ea) + (M_READ(ea+1)<<8) + (PC.B.PB<<16);
-            sprintf( operands, "($%04x,X) 	(@%06x %02x %02x %02x ...)",
+            sprintf( operands, "($%04x,X) (@%06x %02x %02x %02x ...)",
                 operand, ea, M_READ(ea), M_READ(ea+1), M_READ(ea+2) );
 	    size = 3;
             break;
