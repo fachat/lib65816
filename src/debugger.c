@@ -151,6 +151,7 @@ int CPU_disasm(int out) {
 	int	opcode;
 	int	mode;
 	int	operand;
+	int	offset;
 	int ea;
 	char operands[40];
 	int size;
@@ -196,13 +197,15 @@ int CPU_disasm(int out) {
 
         case PCR:
             operand = M_READ(PC.A+1);
-            sprintf( operands, "$%04x 		($%02x -> $%02x%04x)", PC.W.PC + operand + 2, operand, PC.B.PB, PC.W.PC + operand + 2);
+	    offset = operand + 2 - ((operand > 127) ? 256 : 0);
+            sprintf( operands, "$%04x 		($%02x -> $%02x%04x)", PC.W.PC + offset, operand, PC.B.PB, PC.W.PC + offset);
 	    size = 2;
             break;
 
         case PCRL:
             operand = M_READ(PC.A+1) | (M_READ(PC.A+2)<<8);
-            sprintf( operands, "$%04x 		($%04x -> $%02x%04x)", PC.W.PC + operand + 3, operand, PC.B.PB, PC.W.PC + operand + 3);
+	    offset = operand + 3 - ((operand > 32767) ? 65536 : 0);
+            sprintf( operands, "$%04x 		($%04x -> $%02x%04x)", PC.W.PC + offset, operand, PC.B.PB, PC.W.PC + offset);
 	    size = 3;
             break;
 
@@ -531,6 +534,7 @@ int CPU_dis(char *buf, int maxlen, int addr, unsigned char *stat, unsigned char 
 	int	opcode;
 	int	mode;
 	int	operand;
+	int	offset;
 	int 	oplen;
 
 	int xfl = *stat & 0x10;
@@ -589,13 +593,15 @@ int CPU_dis(char *buf, int maxlen, int addr, unsigned char *stat, unsigned char 
 
         case PCR:
             operand = peek(pc+1);
-            n = snprintf(operands, 40, "$%02x ($%02x%04x)", operand, pcb, pcw + operand + 2 - ((operand > 127) ? 256 : 0));
+	    offset = operand + 2 - ((operand > 127) ? 256 : 0);
+            n = snprintf(operands, 40, "$%02x ($%02x%04x)", operand, pcb, pcw + offset);
 	    oplen = 2;
             break;
 
         case PCRL:
             operand = peek(pc+1) | (peek(pc+2)<<8);
-            n = snprintf(operands, 40, "$%02x ($%02x%04x)", operand, pcb, pcw + operand + 3 - ((operand > 32767) ? 65536 : 0));
+	    offset = operand + 3 - ((operand > 32767) ? 65536 : 0);
+            n = snprintf(operands, 40, "$%02x ($%02x%04x)", operand, pcb, pcw + operand + offset);
 	    oplen = 3;
             break;
 
