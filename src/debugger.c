@@ -169,7 +169,7 @@ int CPU_disasm(int out) {
 			(F_getN?'N':'n'), (F_getV?'V':'v'), (F_getM?'M':'m'), (F_getX?'X':'x'),
 			(F_getD?'D':'d'), (F_getI?'I':'i'), (F_getZ?'Z':'z'), (F_getC?'C':'c'),
 			E?'E':'N');
-	if(out) fprintf(outfile, "%02x.%04x  %s ",(int) PC.B.PB,(int) PC.W.PC,mnemonics_lc[opcode]);
+	if(out) fprintf(outfile, "%02x:%04x  %s ",(int) PC.B.PB,(int) PC.W.PC,mnemonics_lc[opcode]);
 	switch (mode) {
         case IMM8:
             sprintf( operands, "#$%02x", M_READ(PC.A+1) );
@@ -518,7 +518,7 @@ int CPU_log(char *buf, int maxlen) {
 	l -= n;
 	p += n;
 
-	n = snprintf(buf+p, l, "%02x/%04x",(int) PC.B.PB,(int) PC.W.PC);
+	n = snprintf(buf+p, l, "%02x:%04x",(int) PC.B.PB,(int) PC.W.PC);
 	l -= n;
 	p += n;
 
