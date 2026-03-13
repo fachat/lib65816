@@ -49,6 +49,19 @@ byte MEM_readMem( word32 address,word32 timestamp, word32 emulFlags )
   return addressSpace[address];
 }
 
+byte MEM_peekMem( word32 address,word32 timestamp, word32 emulFlags )
+{
+
+  address &= 0xFFFFFF;
+
+  if( address > 0x3FFFFF )
+    return 0;
+
+  if( address == 0x000001 && !no_io)    return BlockingRead();
+
+  return addressSpace[address];
+}
+
 void MEM_writeMem( word32 address, byte b,word32 timestamp )
 {
 
