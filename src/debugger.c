@@ -326,7 +326,7 @@ int CPU_disasm(int out) {
             operand = M_PEEK(PC.A+1) | (M_PEEK(PC.A+2)<<8) | (M_PEEK(PC.A+3)<<16);
             if( F_getX ) ea = operand + X.B.L;
             else         ea = operand + X.W;
-            sprintf( operands, "$%06x 	(@%06x %02x %02x %02x ...)",
+            sprintf( operands, "$%06x,X	(@%06x %02x %02x %02x ...)",
                 operand, ea, M_PEEK(ea), M_PEEK(ea+1), M_PEEK(ea+2) );
 	    size = 4;
             break;
